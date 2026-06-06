@@ -1,4 +1,5 @@
 import type {NextConfig} from 'next';
+import path from 'node:path';
 
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
@@ -6,6 +7,7 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: path.join(process.cwd(), '..'),
   eslint: {
     ignoreDuringBuilds: true,
   },

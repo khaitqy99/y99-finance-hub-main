@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const envPath = join(root, 'y99-webadmin', '.env');
+const envPath = join(root, '.env');
 
 function loadEnv() {
   const env = {};
