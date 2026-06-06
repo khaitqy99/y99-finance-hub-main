@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { DashboardShell } from '@/components/DashboardShell';
 
 export const metadata: Metadata = {
   title: 'Y99 Admin Portal',
@@ -14,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className="bg-slate-50 min-h-screen text-slate-900 flex font-sans"
         suppressHydrationWarning
       >
-        <DashboardShell>{children}</DashboardShell>
+        {children}
       </body>
     </html>
   );

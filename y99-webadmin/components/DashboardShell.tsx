@@ -1,19 +1,11 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/components/Sidebar';
 import { UserMenu } from '@/components/UserMenu';
 import { CmsStatusBanner } from '@/components/CmsStatusBanner';
 import { AdminProvider } from '@/lib/store';
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isLogin = pathname === '/login';
-
-  if (isLogin) {
-    return <div className="w-full flex-1">{children}</div>;
-  }
-
   return (
     <AdminProvider>
       <Sidebar />

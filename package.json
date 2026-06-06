@@ -2,17 +2,13 @@
   "name": "y99-finance-hub",
   "private": true,
   "version": "1.0.0",
-  "workspaces": [
-    "y99-webclient",
-    "y99-webadmin"
-  ],
   "scripts": {
-    "dev:client": "npm run dev -w y99-webclient",
-    "dev:admin": "npm run dev -w y99-webadmin",
-    "build:client": "npm run build -w y99-webclient",
-    "build:admin": "npm run build -w y99-webadmin",
+    "dev:client": "npm run dev --prefix y99-webclient",
+    "dev:admin": "npm run dev --prefix y99-webadmin",
+    "build:client": "npm run build --prefix y99-webclient",
+    "build:admin": "npm run build --prefix y99-webadmin",
     "build": "npm run build:client && npm run build:admin",
-    "lint:client": "npm run lint -w y99-webclient",
-    "lint:admin": "npm run lint -w y99-webadmin"
+    "lint:client": "npm run lint --prefix y99-webclient",
+    "lint:admin": "npm run lint --prefix y99-webadmin"
   }
 }
