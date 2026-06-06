@@ -36,7 +36,11 @@ export async function fetchNewsArticles(): Promise<NewsArticle[]> {
     .eq('published', true)
     .order('sort_order');
 
-  if (error || !data?.length) return fallbackNews;
+  if (error) {
+    console.error('[cms] fetchNewsArticles:', error.message);
+    return fallbackNews;
+  }
+  if (!data?.length) return [];
 
   return data.map((row) => ({
     slug: row.slug,
