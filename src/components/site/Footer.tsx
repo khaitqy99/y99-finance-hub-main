@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Phone, Mail, MapPin, Facebook, MessageCircle, MessageSquare, Apple, Play, Building2 } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useCms } from "@/context/CmsContext";
 
 const Footer = () => {
+  const { settings } = useCms();
   const socialLinks = [
     { href: "https://www.facebook.com/profile.php?id=61575859284966", icon: Facebook, label: "Facebook Y99" },
     { href: "https://zalo.me/+84788766009", icon: MessageCircle, label: "Zalo Y99" },
@@ -48,7 +50,7 @@ const Footer = () => {
         <div className="grid gap-10 border-b border-white/10 pb-9 lg:grid-cols-[1.35fr_1fr_1fr_1fr_1fr]">
           <div>
             <div className="mb-4 inline-flex rounded-xl bg-white px-3 py-2 shadow-soft">
-              <img src={logo} alt="Y99" className="h-10 w-auto object-contain" />
+              <img src={logo.src} alt="Y99" className="h-10 w-auto object-contain" />
             </div>
             <p className="max-w-[260px] text-sm leading-relaxed text-white/80">
               Y99 - Minh bạch - An toàn - Tiện lợi
@@ -60,7 +62,7 @@ const Footer = () => {
             <ul className="space-y-2.5 text-sm text-white/80">
               {footerLinkGroups[0].links.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className="inline-flex transition-smooth hover:text-accent">
+                  <Link href={item.to} className="inline-flex transition-smooth hover:text-accent">
                     {item.label}
                   </Link>
                 </li>
@@ -73,7 +75,7 @@ const Footer = () => {
             <ul className="space-y-2.5 text-sm text-white/80">
               {productLinks.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className="inline-flex transition-smooth hover:text-accent">
+                  <Link href={item.to} className="inline-flex transition-smooth hover:text-accent">
                     {item.label}
                   </Link>
                 </li>
@@ -86,7 +88,7 @@ const Footer = () => {
             <ul className="space-y-2.5 text-sm text-white/80">
               {footerLinkGroups[1].links.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className="inline-flex transition-smooth hover:text-accent">
+                  <Link href={item.to} className="inline-flex transition-smooth hover:text-accent">
                     {item.label}
                   </Link>
                 </li>
@@ -99,7 +101,7 @@ const Footer = () => {
             <ul className="space-y-2.5 text-sm text-white/80">
               {footerLinkGroups[2].links.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className="inline-flex transition-smooth hover:text-accent">
+                  <Link href={item.to} className="inline-flex transition-smooth hover:text-accent">
                     {item.label}
                   </Link>
                 </li>
@@ -114,19 +116,19 @@ const Footer = () => {
             <ul className="space-y-2.5 text-sm text-white/85">
               <li className="flex items-start gap-2.5">
                 <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>CÔNG TY CỔ PHẦN CẦM ĐỒ Y99 | MST: 1801778932</span>
+                <span>{settings.companyName}{settings.taxId ? ` | MST: ${settings.taxId}` : ""}</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>Hotline: 1900575792 | +84 292 38 999 33 (Nước ngoài)</span>
+                <span>Hotline: {settings.hotline} | {settings.foreignPhone} (Nước ngoài)</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>cskh@y99.vn</span>
+                <span>{settings.email}</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span>99B Nguyễn Trãi, Phường Ninh Kiều, Thành phố Cần Thơ</span>
+                <span>{settings.address}</span>
               </li>
             </ul>
             <div className="mt-5 flex items-center gap-3">

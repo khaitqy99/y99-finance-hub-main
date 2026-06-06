@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { Phone, Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/logo.png";
+import { useCms } from "@/context/CmsContext";
 
 const loanProducts = [
   { to: "/cho-vay-cam-co/vay-tien-bang-cavet-xe-may", label: "Vay bằng cà vẹt xe máy" },
@@ -22,47 +24,85 @@ const topBarNav = [
   { to: "/lien-he", label: "Liên hệ" },
 ];
 
-const languages = ["Tiếng Việt", "English"];
+const languages = ["Tiếng Việt", "English"] as const;
+const languageShort: Record<(typeof languages)[number], string> = {
+  "Tiếng Việt": "VI",
+  English: "EN",
+};
 
 const Header = () => {
+  const { settings } = useCms();
+  const headerRef = useRef<HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeLanguage, setActiveLanguage] = useState(languages[0]);
+  const [activeLanguage, setActiveLanguage] = useState<(typeof languages)[number]>(languages[0]);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    const root = document.documentElement;
+    if (!el) return;
+
+    const sync = () => {
+      root.style.setProperty("--site-header-offset", `${el.offsetHeight}px`);
+    };
+
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    window.addEventListener("resize", sync);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", sync);
+      root.style.removeProperty("--site-header-offset");
+    };
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header
+      ref={headerRef}
+      className={cn(
+        "z-50 w-full pt-[env(safe-area-inset-top,0px)]",
+        "max-md:fixed max-md:inset-x-0 max-md:top-0",
+        "md:sticky md:top-0",
+      )}
+    >
       {/* Top info bar */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container h-8 flex items-center justify-between gap-4 text-xs font-medium">
+        <div className="container flex min-h-8 flex-wrap items-center justify-center gap-x-2 gap-y-1.5 py-1.5 text-xs font-medium sm:justify-end md:h-8 md:flex-nowrap md:justify-between md:gap-4 md:py-0">
           <div className="hidden md:block flex-1 overflow-hidden whitespace-nowrap pr-4 font-bold">
             <span className="inline-block pl-[100%] animate-marquee-x">
-              Y99 hỗ trợ cầm đồ uy tín, cung cấp dịch vụ cầm đồ online minh bạch, an toàn, tiện lợi - linh hoạt, không giới hạn khoảng cách.
+              {settings.headerMarquee}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:gap-x-3 md:justify-end">
             {topBarNav.map((n, idx) => (
-              <div key={n.to} className="flex items-center gap-3">
-                {idx > 0 && <span className="opacity-70">|</span>}
-                <NavLink to={n.to} className={({ isActive }) => cn("hover:opacity-80 transition-smooth", isActive && "underline")}>
+              <div key={n.to} className="flex shrink-0 items-center gap-x-2 sm:gap-x-3">
+                {idx > 0 && <span className="opacity-70" aria-hidden>|</span>}
+                <NavLink href={n.to} className={({ isActive }) => cn("whitespace-nowrap hover:opacity-80 transition-smooth", isActive && "underline")}>
                   {n.label}
                 </NavLink>
               </div>
             ))}
-            <span className="opacity-70">|</span>
-            <div className="inline-flex items-center rounded-full border border-primary-foreground/30 p-0.5">
+            <span className="shrink-0 opacity-70" aria-hidden>
+              |
+            </span>
+            <div className="inline-flex shrink-0 items-center rounded-full border border-primary-foreground/30 p-0.5">
               {languages.map((lang) => (
                 <button
                   key={lang}
                   type="button"
                   onClick={() => setActiveLanguage(lang)}
                   className={cn(
-                    "px-2.5 py-0.5 rounded-full transition-smooth",
+                    "rounded-full px-1.5 py-0.5 text-[11px] transition-smooth sm:px-2.5 sm:text-xs",
                     activeLanguage === lang
                       ? "bg-primary-foreground text-primary"
                       : "text-primary-foreground/80 hover:text-primary-foreground",
                   )}
                   aria-pressed={activeLanguage === lang}
+                  aria-label={lang === "Tiếng Việt" ? "Ngôn ngữ: Tiếng Việt" : "Ngôn ngữ: English"}
                 >
-                  {lang}
+                  <span className="sm:hidden">{languageShort[lang]}</span>
+                  <span className="hidden sm:inline">{lang}</span>
                 </button>
               ))}
             </div>
@@ -73,13 +113,13 @@ const Header = () => {
       {/* Main nav */}
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
         <div className="container flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0" onClick={() => setMobileOpen(false)}>
-            <img src={logo} alt="Y99 Finance" className="h-10 w-auto object-contain" />
+          <Link href="/" className="flex items-center gap-2 shrink-0" onClick={() => setMobileOpen(false)}>
+            <img src={logo.src} alt="Y99 Finance" className="h-10 w-auto object-contain" />
           </Link>
 
           <nav className="hidden lg:flex items-center justify-center gap-8 xl:gap-12 text-sm font-semibold text-foreground/80 flex-1">
             <NavLink
-              to={mainNav[0].to}
+              href={mainNav[0].to}
               className={({ isActive }) => cn("hover:text-primary transition-smooth", isActive && "text-primary")}
             >
               {mainNav[0].label}
@@ -95,7 +135,7 @@ const Header = () => {
                   {loanProducts.map((p) => (
                     <NavLink
                       key={p.to}
-                      to={p.to}
+                      href={p.to}
                       className={({ isActive }) =>
                         cn(
                           "block px-4 py-2.5 rounded-xl text-sm hover:bg-secondary hover:text-primary transition-smooth",
@@ -113,7 +153,7 @@ const Header = () => {
             {mainNav.slice(1).map((n) => (
               <div key={n.to} className="flex items-center">
                 <NavLink
-                  to={n.to}
+                  href={n.to}
                   className={({ isActive }) => cn("hover:text-primary transition-smooth", isActive && "text-primary")}
                 >
                   {n.label}
@@ -144,7 +184,7 @@ const Header = () => {
               {loanProducts.map((p) => (
                 <NavLink
                   key={p.to}
-                  to={p.to}
+                  href={p.to}
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     cn("block px-3 py-2.5 rounded-lg text-sm hover:bg-secondary", isActive && "bg-secondary text-primary font-semibold")
@@ -157,7 +197,7 @@ const Header = () => {
               {mainNav.map((n) => (
                 <NavLink
                   key={n.to}
-                  to={n.to}
+                  href={n.to}
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     cn("block px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-secondary", isActive && "bg-secondary text-primary")

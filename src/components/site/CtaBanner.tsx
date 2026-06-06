@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Phone, ArrowRight } from "lucide-react";
 
@@ -24,7 +24,7 @@ const CtaBanner = () => {
                 <a href="tel:1900575792"><Phone className="h-5 w-5" /> Hotline 1900575792</a>
               </Button>
               <Button size="xl" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-full gap-2 h-11 md:h-14 text-sm md:text-base" asChild>
-                <Link to="/lien-he">Đăng ký online <ArrowRight className="h-5 w-5" /></Link>
+                <Link href="/vay-tien-online">Đăng ký online <ArrowRight className="h-5 w-5" /></Link>
               </Button>
             </div>
           </div>

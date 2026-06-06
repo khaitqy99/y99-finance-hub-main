@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { BriefcaseBusiness, Building2, Handshake, Mail, MapPin, Phone } from "lucide-react";
 import PageHero from "@/components/site/PageHero";
 import ProductHeroVisual from "@/components/site/ProductHeroVisual";
@@ -22,34 +22,10 @@ const highlights = [
   },
 ];
 
-const recruitmentPosts = [
-  {
-    title: "Chuyên viên tư vấn tài chính",
-    excerpt:
-      "Tư vấn giải pháp tài chính phù hợp, hỗ trợ khách hàng hoàn thiện hồ sơ và đồng hành xuyên suốt quá trình giải ngân.",
-    location: "Cần Thơ",
-    type: "Toàn thời gian",
-    deadline: "31/05/2026",
-  },
-  {
-    title: "Nhân viên chăm sóc khách hàng",
-    excerpt:
-      "Tiếp nhận, hỗ trợ và xử lý phản hồi khách hàng đa kênh, đảm bảo trải nghiệm dịch vụ minh bạch và hài lòng.",
-    location: "TP. Hồ Chí Minh",
-    type: "Toàn thời gian",
-    deadline: "05/06/2026",
-  },
-  {
-    title: "Chuyên viên phát triển kinh doanh",
-    excerpt:
-      "Mở rộng mạng lưới đối tác, triển khai hoạt động thị trường tại khu vực phụ trách và thúc đẩy hiệu quả tăng trưởng.",
-    location: "Hà Nội",
-    type: "Toàn thời gian",
-    deadline: "10/06/2026",
-  },
-];
+import { useCms } from "@/context/CmsContext";
 
 const Recruitment = () => {
+  const { recruitment: recruitmentPosts, settings } = useCms();
   return (
     <>
       <PageHero
@@ -99,7 +75,7 @@ const Recruitment = () => {
                   </div>
                   <div className="mt-5 flex flex-wrap gap-2">
                     <Link
-                      to="/lien-he"
+                      href="/lien-he"
                       className="inline-flex items-center justify-center rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition-smooth hover:opacity-90"
                     >
                       Ứng tuyển ngay
@@ -125,19 +101,19 @@ const Recruitment = () => {
             <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-3">
                 <Building2 className="mt-0.5 h-4 w-4 text-primary" />
-                <span>CÔNG TY CỔ PHẦN CẦM ĐỒ Y99</span>
+                <span>{settings.companyName}</span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                <span>99B Nguyễn Trãi, Phường Ninh Kiều, Thành phố Cần Thơ</span>
+                <span>{settings.address}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="mt-0.5 h-4 w-4 text-primary" />
-                <span>1900575792 | +84 292 38 999 33 (Nước ngoài)</span>
+                <span>{settings.hotline} | {settings.foreignPhone} (Nước ngoài)</span>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 h-4 w-4 text-primary" />
-                <span>cskh@y99.vn</span>
+                <span>{settings.email}</span>
               </li>
             </ul>
           </div>

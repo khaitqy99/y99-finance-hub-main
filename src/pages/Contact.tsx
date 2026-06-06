@@ -7,15 +7,40 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { submitLead } from "@/lib/cms/fetch";
+import { useCms } from "@/context/CmsContext";
 
 const Contact = () => {
   const { toast } = useToast();
+  const { settings } = useCms();
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
-    toast({ title: "Đã gửi yêu cầu", description: "Y99 sẽ liên hệ bạn trong vòng 15 phút." });
+    const form = new FormData(e.currentTarget);
+    setSubmitting(true);
+    try {
+      const product = String(form.get("product") ?? "");
+      const message = String(form.get("message") ?? "").trim();
+      await submitLead({
+        full_name: String(form.get("fullName") ?? ""),
+        phone: String(form.get("phone") ?? ""),
+        email: String(form.get("email") ?? "") || undefined,
+        loan_need: product ? `[Liên hệ] ${product}` : "[Liên hệ]",
+        asset: message || undefined,
+      });
+      setSubmitted(true);
+      toast({ title: "Đã gửi yêu cầu", description: "Y99 sẽ liên hệ bạn trong vòng 15 phút." });
+    } catch {
+      toast({
+        title: "Không gửi được yêu cầu",
+        description: "Vui lòng thử lại hoặc gọi hotline " + settings.hotline,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -72,20 +97,24 @@ const Contact = () => {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label className="text-sm font-semibold text-foreground">Họ và tên *</label>
-                    <Input required placeholder="Nguyễn Văn A" className="mt-2 h-12" />
+                    <Input required name="fullName" placeholder="Nguyễn Văn A" className="mt-2 h-12" />
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-foreground">Số điện thoại *</label>
-                    <Input required type="tel" placeholder="09xx xxx xxx" className="mt-2 h-12" />
+                    <Input required type="tel" name="phone" placeholder="09xx xxx xxx" className="mt-2 h-12" />
                   </div>
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground">Email</label>
-                  <Input type="email" placeholder="email@example.com" className="mt-2 h-12" />
+                  <Input type="email" name="email" placeholder="email@example.com" className="mt-2 h-12" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground">Sản phẩm quan tâm</label>
-                  <select className="mt-2 w-full h-12 rounded-md border border-input bg-background px-3 text-sm">
+                  <select
+                    name="product"
+                    className="mt-2 w-full h-12 rounded-md border border-input bg-background px-3 text-sm"
+                    defaultValue="Vay theo lương"
+                  >
                     <option>Vay theo lương</option>
                     <option>Vay bằng cà vẹt xe máy</option>
                     <option>Vay bằng cà vẹt ô tô</option>
@@ -96,10 +125,10 @@ const Contact = () => {
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground">Nội dung</label>
-                  <Textarea rows={4} placeholder="Mô tả nhu cầu của bạn..." className="mt-2" />
+                  <Textarea name="message" rows={4} placeholder="Mô tả nhu cầu của bạn..." className="mt-2" />
                 </div>
-                <Button type="submit" variant="hero" size="xl" className="w-full gap-2">
-                  Gửi yêu cầu <Send className="h-5 w-5" />
+                <Button type="submit" variant="hero" size="xl" className="w-full gap-2" disabled={submitting}>
+                  {submitting ? "Đang gửi…" : "Gửi yêu cầu"} <Send className="h-5 w-5" />
                 </Button>
               </form>
             )}

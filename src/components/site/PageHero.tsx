@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -26,12 +26,12 @@ const PageHero = ({ eyebrow, title, description, crumbs = [], media, titleClassN
         <div>
           {crumbs.length > 0 && (
             <nav className="flex items-center flex-wrap gap-1.5 text-sm opacity-85 mb-5">
-              <Link to="/" className="hover:text-accent transition-smooth">Trang chủ</Link>
+              <Link href="/" className="hover:text-accent transition-smooth">Trang chủ</Link>
               {crumbs.map((c, i) => (
                 <span key={i} className="flex items-center gap-1.5">
                   <ChevronRight className="h-3.5 w-3.5" />
                   {c.to ? (
-                    <Link to={c.to} className="hover:text-accent transition-smooth">{c.label}</Link>
+                    <Link href={c.to} className="hover:text-accent transition-smooth">{c.label}</Link>
                   ) : (
                     <span className="text-accent font-medium">{c.label}</span>
                   )}
@@ -44,11 +44,15 @@ const PageHero = ({ eyebrow, title, description, crumbs = [], media, titleClassN
               {eyebrow}
             </span>
           )}
-          <h1 className={`font-extrabold max-w-4xl text-3xl md:text-4xl lg:text-5xl leading-tight ${titleClassName}`}>
+          <h1
+            className={`font-extrabold max-w-4xl text-balance text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight [overflow-wrap:anywhere] ${titleClassName}`}
+          >
             {title}
           </h1>
           {description && (
-            <p className="mt-5 text-lg text-primary-foreground/85 max-w-2xl">{description}</p>
+            <p className="mt-5 text-base sm:text-lg text-pretty text-primary-foreground/85 max-w-2xl leading-relaxed">
+              {description}
+            </p>
           )}
         </div>
 

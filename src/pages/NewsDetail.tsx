@@ -1,18 +1,19 @@
-import { useEffect } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import Link from "next/link";
 import { Calendar, ArrowLeft } from "lucide-react";
 import PageHero from "@/components/site/PageHero";
-import { newsArticles } from "@/data/newsArticles";
+import { useCms } from "@/context/CmsContext";
+import { parseImageLine } from "@/lib/cms/content-images";
 
-const NewsDetail = () => {
-  const { slug } = useParams<{ slug: string }>();
+type Props = {
+  /** From getServerSideProps — router.query.slug is empty on first client paint */
+  slug: string;
+};
+
+const NewsDetail = ({ slug }: Props) => {
+  const { news: newsArticles } = useCms();
   const article = newsArticles.find((a) => a.slug === slug);
 
-  useEffect(() => {
-    if (article) document.title = `${article.title} | Y99 Finance`;
-  }, [article]);
-
-  if (!article) return <Navigate to="/404" replace />;
+  if (!article) return null;
 
   const related = newsArticles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
@@ -33,12 +34,28 @@ const NewsDetail = () => {
 
           <div className="prose prose-lg max-w-none mt-8 space-y-5 text-foreground/85">
             <p className="text-xl leading-relaxed font-medium text-foreground">{article.excerpt}</p>
-            {article.content.map((p, i) => (
-              <p key={i} className="leading-relaxed">{p}</p>
-            ))}
+            {article.content.map((p, i) => {
+              const img = parseImageLine(p);
+              if (img) {
+                return (
+                  <img
+                    key={i}
+                    src={img.url}
+                    alt={img.alt || article.title}
+                    loading="lazy"
+                    className="rounded-2xl w-full my-6 shadow-card object-cover"
+                  />
+                );
+              }
+              return (
+                <p key={i} className="leading-relaxed">
+                  {p}
+                </p>
+              );
+            })}
           </div>
 
-          <Link to="/ban-tin" className="inline-flex items-center gap-2 mt-10 text-primary font-semibold hover:gap-3 transition-smooth">
+          <Link href="/ban-tin" className="inline-flex items-center gap-2 mt-10 text-primary font-semibold hover:gap-3 transition-smooth">
             <ArrowLeft className="h-4 w-4" /> Quay lại danh sách
           </Link>
         </div>
@@ -49,7 +66,7 @@ const NewsDetail = () => {
           <h2 className="text-2xl font-extrabold mb-6 text-foreground">Tin liên quan</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {related.map((a) => (
-              <Link key={a.slug} to={`/ban-tin/${a.slug}`} className="group rounded-2xl bg-card overflow-hidden border border-border/60 shadow-soft hover:shadow-card transition-smooth">
+              <Link key={a.slug} href={`/ban-tin/${a.slug}`} className="group rounded-2xl bg-card overflow-hidden border border-border/60 shadow-soft hover:shadow-card transition-smooth">
                 <div className="aspect-[16/10] overflow-hidden">
                   <img src={a.image} alt={a.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-smooth" />
                 </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, Dot, ShieldCheck, PhoneCall, Building2, Bike, Car, Smartphone } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,7 +13,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useToast } from "@/hooks/use-toast";
-import { loanProducts } from "@/data/loanProducts";
+import { useCms } from "@/context/CmsContext";
+import { submitLead } from "@/lib/cms/fetch";
 
 const requiredProfiles = [
   "Cavet xe (đăng ký xe) chính chủ, CCCD, SIM chính chủ.",
@@ -106,14 +107,18 @@ const districtsByCity: Record<string, string[]> = {
   "Bắc Ninh": ["Bắc Ninh", "Quế Võ", "Tiên Du", "Yên Phong", "Từ Sơn", "Thuận Thành", "Gia Bình", "Lương Tài"],
 };
 
-const projectPackages = Object.values(loanProducts);
-
 const VayTienOnlineSeo = () => {
+  const { products, settings } = useCms();
+  const projectPackages = Object.values(products);
   const { toast } = useToast();
   const [agreed, setAgreed] = useState(false);
   const [selectedCity, setSelectedCity] = useState(cities[0]);
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    () => (districtsByCity[cities[0]] ?? [])[0] ?? "",
+  );
+  const [submitting, setSubmitting] = useState(false);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!agreed) {
@@ -125,10 +130,34 @@ const VayTienOnlineSeo = () => {
       return;
     }
 
-    toast({
-      title: "Đăng ký thành công",
-      description: "Chuyên viên tư vấn sẽ liên hệ bạn trong thời gian sớm nhất.",
-    });
+    const form = new FormData(e.currentTarget);
+    setSubmitting(true);
+    try {
+      await submitLead({
+        full_name: "Khách vay online",
+        phone: String(form.get("phone") ?? ""),
+        city: String(form.get("city") ?? ""),
+        district: String(form.get("district") ?? ""),
+        loan_need: "[Vay online]",
+        asset: String(form.get("asset") ?? ""),
+      });
+      toast({
+        title: "Đăng ký thành công",
+        description: "Chuyên viên tư vấn sẽ liên hệ bạn trong thời gian sớm nhất.",
+      });
+      e.currentTarget.reset();
+      setAgreed(false);
+      setSelectedCity(cities[0]);
+      setSelectedDistrict((districtsByCity[cities[0]] ?? [])[0] ?? "");
+    } catch {
+      toast({
+        title: "Không gửi được đăng ký",
+        description: "Vui lòng thử lại hoặc gọi hotline " + settings.hotline,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -140,7 +169,7 @@ const VayTienOnlineSeo = () => {
               <BreadcrumbList className="text-white/80">
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to="/" className="hover:text-white">Trang chủ</Link>
+                    <Link href="/" className="hover:text-white">Trang chủ</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -183,11 +212,16 @@ const VayTienOnlineSeo = () => {
             <div className="mt-5 space-y-4">
               <div>
                 <label className="text-sm font-semibold">Số điện thoại *</label>
-                <Input required type="tel" placeholder="09xx xxx xxx" className="mt-2 h-11" />
+                <Input required type="tel" name="phone" placeholder="09xx xxx xxx" className="mt-2 h-11" />
               </div>
               <div>
                 <label className="text-sm font-semibold">Tài sản cầm cố *</label>
-                <select className="mt-2 h-11 w-full rounded-md border border-input bg-background px-3 text-sm">
+                <select
+                  name="asset"
+                  required
+                  className="mt-2 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  defaultValue="Cavet xe máy chính chủ"
+                >
                   <option>Cavet xe máy chính chủ</option>
                   <option>Cavet oto chính chủ</option>
                   <option>ICloud Iphone từ 12 pro max trở lên</option>
@@ -197,20 +231,36 @@ const VayTienOnlineSeo = () => {
                 <div>
                   <label className="text-sm font-semibold">Tỉnh / Thành phố *</label>
                   <select
+                    name="city"
+                    required
                     value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
+                    onChange={(e) => {
+                      const city = e.target.value;
+                      setSelectedCity(city);
+                      setSelectedDistrict((districtsByCity[city] ?? [])[0] ?? "");
+                    }}
                     className="mt-2 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
                   >
                     {cities.map((city) => (
-                      <option key={city}>{city}</option>
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="text-sm font-semibold">Quận Huyện *</label>
-                  <select className="mt-2 h-11 w-full rounded-md border border-input bg-background px-3 text-sm">
+                  <select
+                    name="district"
+                    required
+                    value={selectedDistrict}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    className="mt-2 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  >
                     {(districtsByCity[selectedCity] ?? []).map((district) => (
-                      <option key={district}>{district}</option>
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -225,8 +275,8 @@ const VayTienOnlineSeo = () => {
                   Tôi đã đọc và đồng ý với chính sách bảo mật thông tin và điều khoản đăng ký vay.
                 </span>
               </label>
-              <Button type="submit" variant="hero" className="w-full h-11">
-                Gửi thông tin
+              <Button type="submit" variant="hero" className="w-full h-11" disabled={submitting}>
+                {submitting ? "Đang gửi…" : "Gửi thông tin"}
               </Button>
             </div>
           </form>
@@ -301,7 +351,7 @@ const VayTienOnlineSeo = () => {
               {projectPackages.map((pkg) => (
                 <Link
                   key={pkg.slug}
-                  to={`/cho-vay-cam-co/${pkg.slug}`}
+                  href={`/cho-vay-cam-co/${pkg.slug}`}
                   className="rounded-2xl border border-border bg-background p-4 hover:border-primary transition-smooth"
                 >
                   <div className="font-bold text-foreground">{pkg.name}</div>

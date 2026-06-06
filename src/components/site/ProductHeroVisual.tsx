@@ -1,10 +1,12 @@
 interface ProductHeroVisualProps {
-  src: string;
+  src: string | { src: string };
   alt: string;
   imageClassName?: string;
 }
 
 const ProductHeroVisual = ({ src, alt, imageClassName = "" }: ProductHeroVisualProps) => {
+  const imageSrc = typeof src === "string" ? src : src.src;
+
   return (
     <div className="relative w-full max-w-md aspect-square">
       {/* Glowing aura layers */}
@@ -26,7 +28,7 @@ const ProductHeroVisual = ({ src, alt, imageClassName = "" }: ProductHeroVisualP
       {/* Static image */}
       <div className="relative h-full w-full">
         <img
-          src={src}
+          src={imageSrc}
           alt={alt}
           width={1024}
           height={1024}

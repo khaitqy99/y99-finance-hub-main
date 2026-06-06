@@ -10,17 +10,21 @@ const FACEBOOK_ICON_URL = "https://cdn-icons-png.flaticon.com/128/5968/5968764.p
 const HOTLINE_TEL = "tel:1900575792";
 
 const fabBase =
-  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:h-12 sm:w-12";
 
 const iconLinkBase =
-  "pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "pointer-events-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:h-12 sm:w-12";
 
 const FloatingContactDock = () => {
   const { toast } = useToast();
 
   return (
     <div
-      className="pointer-events-none fixed bottom-6 right-4 z-40 flex flex-col items-center gap-2.5 md:bottom-8 md:right-6"
+      className={cn(
+        "pointer-events-none fixed z-40 flex flex-col items-center gap-2 sm:gap-2.5",
+        "bottom-[calc(0.75rem+env(safe-area-inset-bottom,0px))] right-[calc(0.75rem+env(safe-area-inset-right,0px))]",
+        "sm:bottom-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:right-[calc(1.5rem+env(safe-area-inset-right,0px))]",
+      )}
       aria-label="Liên hệ nhanh"
     >
       <a
@@ -36,7 +40,7 @@ const FloatingContactDock = () => {
           })
         }
       >
-        <span className="text-[10px] font-extrabold tracking-tight">Zalo</span>
+        <span className="text-[9px] font-extrabold tracking-tight sm:text-[10px]">Zalo</span>
       </a>
 
       <a
@@ -58,7 +62,7 @@ const FloatingContactDock = () => {
           width={48}
           height={48}
           draggable={false}
-          className="h-12 w-12 object-contain"
+          className="h-9 w-9 object-contain sm:h-12 sm:w-12"
         />
       </a>
 
@@ -81,7 +85,7 @@ const FloatingContactDock = () => {
           width={48}
           height={48}
           draggable={false}
-          className="h-12 w-12 object-contain"
+          className="h-9 w-9 object-contain sm:h-12 sm:w-12"
         />
       </a>
 
@@ -96,7 +100,7 @@ const FloatingContactDock = () => {
           })
         }
       >
-        <PhoneCall className="h-5 w-5" aria-hidden />
+        <PhoneCall className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
       </a>
     </div>
   );

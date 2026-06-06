@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ShieldCheck, PhoneCall, Clock3, Wallet } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { submitLead } from "@/lib/cms/fetch";
+import { useCms } from "@/context/CmsContext";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,9 +25,11 @@ const loanNeeds = [
 
 const DangKyVayNgay = () => {
   const { toast } = useToast();
+  const { settings } = useCms();
   const [agreed, setAgreed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!agreed) {
@@ -37,13 +41,32 @@ const DangKyVayNgay = () => {
       return;
     }
 
-    toast({
-      title: "Gửi đăng ký thành công",
-      description: "Chuyên viên Y99 sẽ liên hệ tư vấn cho bạn sớm nhất.",
-    });
-
-    e.currentTarget.reset();
-    setAgreed(false);
+    const form = new FormData(e.currentTarget);
+    setSubmitting(true);
+    try {
+      await submitLead({
+        full_name: String(form.get("fullName") ?? ""),
+        phone: String(form.get("phone") ?? ""),
+        city: String(form.get("city") ?? ""),
+        district: String(form.get("district") ?? ""),
+        loan_need: String(form.get("loanNeed") ?? ""),
+        asset: String(form.get("asset") ?? "") || undefined,
+      });
+      toast({
+        title: "Gửi đăng ký thành công",
+        description: "Chuyên viên Y99 sẽ liên hệ tư vấn cho bạn sớm nhất.",
+      });
+      e.currentTarget.reset();
+      setAgreed(false);
+    } catch {
+      toast({
+        title: "Không gửi được đăng ký",
+        description: "Vui lòng thử lại hoặc gọi hotline " + settings.hotline,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -54,7 +77,7 @@ const DangKyVayNgay = () => {
             <BreadcrumbList className="text-white/80">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/" className="hover:text-white">
+                  <Link href="/" className="hover:text-white">
                     Trang chủ
                   </Link>
                 </BreadcrumbLink>
@@ -87,7 +110,7 @@ const DangKyVayNgay = () => {
                   <Wallet className="h-5 w-5 text-accent" /> Hạn mức linh hoạt từ 3 triệu đến 2 tỷ.
                 </div>
                 <div className="flex items-center gap-2 text-white/95">
-                  <PhoneCall className="h-5 w-5 text-accent" /> Hỗ trợ qua hotline 1900575792.
+                  <PhoneCall className="h-5 w-5 text-accent" /> Hỗ trợ qua hotline {settings.hotline}.
                 </div>
               </div>
             </div>
@@ -151,8 +174,8 @@ const DangKyVayNgay = () => {
                   <span>Tôi đồng ý để Y99 liên hệ tư vấn và xử lý thông tin theo chính sách bảo mật.</span>
                 </label>
 
-                <Button type="submit" variant="hero" className="w-full h-11">
-                  Gửi đăng ký vay ngay
+                <Button type="submit" variant="hero" className="w-full h-11" disabled={submitting}>
+                  {submitting ? "Đang gửi…" : "Gửi đăng ký vay ngay"}
                 </Button>
               </div>
             </form>

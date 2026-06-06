@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Calendar, ArrowRight } from "lucide-react";
 import PageHero from "@/components/site/PageHero";
 import ProductHeroVisual from "@/components/site/ProductHeroVisual";
 import imgNews from "@/assets/page-news.webp";
-import { newsArticles } from "@/data/newsArticles";
+import { useCms } from "@/context/CmsContext";
 
 const News = () => {
+  const { news: newsArticles } = useCms();
+  if (!newsArticles.length) return null;
   const [featured, ...rest] = newsArticles;
   return (
     <>
@@ -20,7 +22,7 @@ const News = () => {
       <section className="py-16">
         <div className="container space-y-12">
           {/* Featured */}
-          <Link to={`/ban-tin/${featured.slug}`} className="group grid lg:grid-cols-2 gap-8 items-center rounded-3xl overflow-hidden bg-card border border-border/60 shadow-soft hover:shadow-card transition-smooth">
+          <Link href={`/ban-tin/${featured.slug}`} className="group grid lg:grid-cols-2 gap-8 items-center rounded-3xl overflow-hidden bg-card border border-border/60 shadow-soft hover:shadow-card transition-smooth">
             <div className="aspect-[16/10] overflow-hidden">
               <img src={featured.image} alt={featured.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-smooth" />
             </div>
@@ -38,7 +40,7 @@ const News = () => {
           {/* Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rest.map((a) => (
-              <Link key={a.slug} to={`/ban-tin/${a.slug}`} className="group rounded-2xl bg-card overflow-hidden border border-border/60 shadow-soft hover:shadow-card transition-smooth hover:-translate-y-1">
+              <Link key={a.slug} href={`/ban-tin/${a.slug}`} className="group rounded-2xl bg-card overflow-hidden border border-border/60 shadow-soft hover:shadow-card transition-smooth hover:-translate-y-1">
                 <div className="aspect-[16/10] overflow-hidden">
                   <img src={a.image} alt={a.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-smooth" />
                 </div>

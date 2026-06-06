@@ -1,10 +1,27 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import { ClientOnly } from "@/components/ClientOnly";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Calculator } from "lucide-react";
+import { formatVnd } from "@/lib/format-vnd";
 
-const fmt = (n: number) => n.toLocaleString("vi-VN") + " đ";
+function sliderPlaceholder(percent: number) {
+  return (
+    <div
+      className="relative flex w-full touch-none select-none items-center"
+      aria-hidden
+    >
+      <div className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
+        <div
+          className="absolute h-full bg-primary"
+          style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
+        />
+      </div>
+      <div className="block h-5 w-5 shrink-0 rounded-full border-2 border-primary bg-background" />
+    </div>
+  );
+}
 
 const LoanCalculator = () => {
   const [amount, setAmount] = useState(3_000_000);
@@ -42,9 +59,11 @@ const LoanCalculator = () => {
             <div>
               <div className="flex justify-between mb-3">
                 <label className="text-sm font-semibold text-foreground">Số tiền cần vay</label>
-                <span className="text-sm font-bold text-primary">{fmt(amount)}</span>
+                <span className="text-sm font-bold text-primary">{formatVnd(amount)}</span>
               </div>
-              <Slider value={[amount]} min={3_000_000} max={300_000_000} step={1_000_000} onValueChange={(v) => setAmount(v[0])} />
+              <ClientOnly fallback={sliderPlaceholder(0)}>
+                <Slider value={[amount]} min={3_000_000} max={300_000_000} step={1_000_000} onValueChange={(v) => setAmount(v[0])} />
+              </ClientOnly>
               <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
                 <span>3 triệu</span><span>300 triệu</span>
               </div>
@@ -55,7 +74,9 @@ const LoanCalculator = () => {
                 <label className="text-sm font-semibold text-foreground">Kỳ hạn vay</label>
                 <span className="text-sm font-bold text-primary">{months} tháng</span>
               </div>
-              <Slider value={[months]} min={3} max={9} step={1} onValueChange={(v) => setMonths(v[0])} />
+              <ClientOnly fallback={sliderPlaceholder(((months - 3) / 6) * 100)}>
+                <Slider value={[months]} min={3} max={9} step={1} onValueChange={(v) => setMonths(v[0])} />
+              </ClientOnly>
               <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
                 <span>3 tháng</span><span>9 tháng</span>
               </div>
@@ -63,11 +84,11 @@ const LoanCalculator = () => {
 
             <div className="rounded-2xl bg-gradient-soft p-5 border border-primary/10">
               <div className="text-sm text-muted-foreground">Trả góp hàng tháng (ước tính)</div>
-              <div className="text-3xl md:text-4xl font-extrabold text-primary mt-1">{fmt(monthly)}</div>
+              <div className="text-3xl md:text-4xl font-extrabold text-primary mt-1">{formatVnd(monthly)}</div>
             </div>
 
             <Button variant="hero" size="xl" className="w-full" asChild>
-              <Link to="/vay-tien-online">Đăng ký vay ngay</Link>
+              <Link href="/vay-tien-online">Đăng ký vay ngay</Link>
             </Button>
           </div>
         </div>

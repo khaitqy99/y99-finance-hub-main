@@ -1,21 +1,16 @@
-import { useParams, Navigate } from "react-router-dom";
-import { loanProducts } from "@/data/loanProducts";
 import LoanProductPage from "@/components/site/LoanProductPage";
-import { useEffect } from "react";
+import { useCms } from "@/context/CmsContext";
 
-const LoanProduct = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const data = slug ? loanProducts[slug] : undefined;
+type Props = {
+  /** From getServerSideProps — router.query.slug is empty on first client paint */
+  slug: string;
+};
 
-  useEffect(() => {
-    if (data) {
-      document.title = `${data.name} | Y99 Finance`;
-      const meta = document.querySelector('meta[name="description"]');
-      if (meta) meta.setAttribute("content", data.tagline);
-    }
-  }, [data]);
+const LoanProduct = ({ slug }: Props) => {
+  const { products } = useCms();
+  const data = products[slug];
 
-  if (!data) return <Navigate to="/404" replace />;
+  if (!data) return null;
 
   return <LoanProductPage data={data} />;
 };

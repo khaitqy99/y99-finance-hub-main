@@ -1,16 +1,38 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useCms } from "@/context/CmsContext";
 import imgMotorbike from "@/assets/loan-motorbike.webp";
 import imgCar from "@/assets/loan-car.webp";
 import imgIcloud from "@/assets/loan-icloud.webp";
+import { productImages } from "@/data/loanProducts";
 
 const services = [
-  { image: imgMotorbike, title: "Vay đăng ký xe máy", desc: "Vay tiền bằng Cà vẹt (Giấy đăng ký xe) chính chủ.", to: "/cho-vay-cam-co/vay-tien-bang-cavet-xe-may" },
-  { image: imgCar, title: "Vay đăng ký ô tô", desc: "Hỗ trợ hạn mức vốn lớn bằng đăng ký xe ô tô.", to: "/cho-vay-cam-co/vay-tien-bang-cavet-oto" },
-  { image: imgIcloud, title: "Vay bằng iCloud", desc: "Điện thoại vẫn dùng - tiền vẫn về. Không giữ máy. Hỗ trợ vay ONLINE", to: "/cho-vay-cam-co/vay-bang-icloud" },
+  {
+    slug: "vay-tien-bang-cavet-xe-may",
+    fallback: imgMotorbike,
+    title: "Vay đăng ký xe máy",
+    desc: "Vay tiền bằng Cà vẹt (Giấy đăng ký xe) chính chủ.",
+    to: "/cho-vay-cam-co/vay-tien-bang-cavet-xe-may",
+  },
+  {
+    slug: "vay-tien-bang-cavet-oto",
+    fallback: imgCar,
+    title: "Vay đăng ký ô tô",
+    desc: "Hỗ trợ hạn mức vốn lớn bằng đăng ký xe ô tô.",
+    to: "/cho-vay-cam-co/vay-tien-bang-cavet-oto",
+  },
+  {
+    slug: "vay-bang-icloud",
+    fallback: imgIcloud,
+    title: "Vay bằng iCloud",
+    desc: "Điện thoại vẫn dùng - tiền vẫn về. Không giữ máy. Hỗ trợ vay ONLINE",
+    to: "/cho-vay-cam-co/vay-bang-icloud",
+  },
 ] as const;
 
 const Services = () => {
+  const { products } = useCms();
+
   return (
     <section id="services" className="py-20 bg-gradient-soft">
       <div className="container">
@@ -26,35 +48,39 @@ const Services = () => {
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6 perspective-1000">
-          {services.map((s) => (
-            <Link
-              to={s.to}
-              key={s.title}
-              className="group relative rounded-3xl bg-card p-7 pt-6 shadow-soft hover:shadow-card transition-smooth border border-border/60 hover:-translate-y-1 block overflow-hidden w-full h-full flex flex-col"
-            >
-              {/* Glow accent */}
-              <div className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-accent/10 blur-3xl group-hover:bg-accent/30 transition-smooth" />
+          {services.map((s) => {
+            const cmsImage = products[s.slug]?.image;
+            const localFallback = productImages[s.slug as keyof typeof productImages] ?? s.fallback;
+            const imageSrc = cmsImage || (typeof localFallback === "string" ? localFallback : localFallback.src);
 
-              {/* 3D visual */}
-              <div className="relative h-40 mb-4 flex items-center justify-center">
-                <div className="absolute inset-x-6 bottom-2 h-3 rounded-full bg-foreground/20 blur-md" />
-                <img
-                  src={s.image}
-                  alt={s.title}
-                  width={400}
-                  height={400}
-                  loading="lazy"
-                  className="relative h-full w-auto object-contain animate-float-3d group-hover:scale-110 transition-transform duration-500 drop-shadow-[0_20px_25px_rgba(0,0,0,0.18)]"
-                />
-              </div>
+            return (
+              <Link
+                href={s.to}
+                key={s.title}
+                className="group relative rounded-3xl bg-card p-7 pt-6 shadow-soft hover:shadow-card transition-smooth border border-border/60 hover:-translate-y-1 block overflow-hidden w-full h-full flex flex-col"
+              >
+                <div className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-accent/10 blur-3xl group-hover:bg-accent/30 transition-smooth" />
 
-              <h3 className="text-xl font-bold text-foreground mb-2">{s.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-5">{s.desc}</p>
-              <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:gap-2.5 transition-smooth">
-                Tìm hiểu thêm <ArrowRight className="h-4 w-4" />
-              </span>
-            </Link>
-          ))}
+                <div className="relative h-40 mb-4 flex items-center justify-center">
+                  <div className="absolute inset-x-6 bottom-2 h-3 rounded-full bg-foreground/20 blur-md" />
+                  <img
+                    src={imageSrc}
+                    alt={s.title}
+                    width={400}
+                    height={400}
+                    loading="lazy"
+                    className="relative h-full w-auto object-contain animate-float-3d group-hover:scale-110 transition-transform duration-500 drop-shadow-[0_20px_25px_rgba(0,0,0,0.18)]"
+                  />
+                </div>
+
+                <h3 className="text-xl font-bold text-foreground mb-2">{s.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-5">{s.desc}</p>
+                <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:gap-2.5 transition-smooth">
+                  Tìm hiểu thêm <ArrowRight className="h-4 w-4" />
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import { Quote } from "lucide-react";
+import { useCms } from "@/context/CmsContext";
 
-const items = [
+const fallbackItems = [
   { name: "Anh Minh Tuấn", role: "Tài xế công nghệ - Hà Nội", text: "Mình cần vốn gấp để sửa xe, Y99 duyệt và giải ngân chỉ trong 20 phút. Nhân viên tư vấn rất nhiệt tình." },
   { name: "Chị Thu Hằng", role: "Nhân viên văn phòng - TP.HCM", text: "Lãi suất rõ ràng, không có phí ẩn. App rất dễ dùng, mình theo dõi khoản trả mỗi tháng cực tiện." },
   { name: "Anh Quốc Huy", role: "Chủ shop kinh doanh - Đà Nẵng", text: "Lần đầu vay online mà cảm thấy yên tâm. Y99 chuyên nghiệp từ tư vấn đến hợp đồng." },
@@ -10,6 +11,8 @@ const items = [
 ];
 
 const Testimonials = () => {
+  const { testimonials: cmsItems } = useCms();
+  const items = cmsItems ?? fallbackItems;
   const featuredItems = items.slice(0, 3);
 
   return (

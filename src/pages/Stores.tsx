@@ -1,18 +1,19 @@
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight, MapPin, Clock, Search } from "lucide-react";
 import PageHero from "@/components/site/PageHero";
 import ProductHeroVisual from "@/components/site/ProductHeroVisual";
-import { StoreLocatorLeaflet } from "@/components/site/StoreLocatorLeaflet";
+
+const StoreLocatorLeaflet = dynamic(
+  () => import("@/components/site/StoreLocatorLeaflet").then((m) => m.StoreLocatorLeaflet),
+  { ssr: false },
+);
 import imgStores from "@/assets/page-stores.webp";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  storeLocations,
-  districtsForProvince,
-  provincesFromStores,
-  type StoreLocation,
-} from "@/data/storeLocations";
+import { districtsForProvince, provincesFromStores, type StoreLocation } from "@/data/storeLocations";
+import { useCms } from "@/context/CmsContext";
 
 const ALL = "__all__";
 
@@ -33,6 +34,7 @@ function applyFilters(
 }
 
 const Stores = () => {
+  const { stores: storeLocations } = useCms();
   const [draftQ, setDraftQ] = useState("");
   const [draftProvince, setDraftProvince] = useState(ALL);
   const [draftDistrict, setDraftDistrict] = useState(ALL);
@@ -42,15 +44,15 @@ const Stores = () => {
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  const provinces = useMemo(() => provincesFromStores(storeLocations), []);
+  const provinces = useMemo(() => provincesFromStores(storeLocations), [storeLocations]);
   const districtOptions = useMemo(
     () => districtsForProvince(storeLocations, draftProvince === ALL ? null : draftProvince),
-    [draftProvince],
+    [draftProvince, storeLocations],
   );
 
   const filtered = useMemo(
     () => applyFilters(storeLocations, appliedQ, appliedProvince, appliedDistrict),
-    [appliedQ, appliedProvince, appliedDistrict],
+    [storeLocations, appliedQ, appliedProvince, appliedDistrict],
   );
 
   useEffect(() => {

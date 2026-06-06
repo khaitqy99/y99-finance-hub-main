@@ -18,11 +18,12 @@ function useLatest<T>(value: T) {
 
 const defaultCenter: L.LatLngExpression = [16.05, 106.3];
 const defaultZoom = 6;
+const markerLogo = typeof logoUrl === "string" ? logoUrl : logoUrl.src;
 
 function markerIcon() {
   return L.divIcon({
     className: "y99-leaflet-marker-wrap",
-    html: `<div class="y99-leaflet-marker"><img src="${logoUrl}" width="14" height="14" alt="" /></div>`,
+    html: `<div class="y99-leaflet-marker"><img src="${markerLogo}" width="14" height="14" alt="" /></div>`,
     iconSize: [28, 32],
     iconAnchor: [14, 32],
     popupAnchor: [0, -28],
@@ -59,12 +60,14 @@ export function StoreLocatorLeaflet({ stores, focusedId, onMarkerSelect }: Props
     window.addEventListener("resize", onResize);
     requestAnimationFrame(() => map.invalidateSize());
 
+    const markers = markersRef.current;
+
     return () => {
       window.removeEventListener("resize", onResize);
       map.remove();
       mapRef.current = null;
       layerRef.current = null;
-      markersRef.current.clear();
+      markers.clear();
     };
   }, []);
 
@@ -97,7 +100,7 @@ export function StoreLocatorLeaflet({ stores, focusedId, onMarkerSelect }: Props
 
     const bounds = L.latLngBounds(stores.map((s) => [s.lat, s.lng] as L.LatLngTuple));
     map.fitBounds(bounds, { padding: [48, 48], maxZoom: 12 });
-  }, [stores]);
+  }, [stores, onSelectRef]);
 
   useEffect(() => {
     const map = mapRef.current;

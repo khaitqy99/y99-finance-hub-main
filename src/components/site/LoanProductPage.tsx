@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { CheckCircle2, FileText, Clock, BadgeDollarSign, ShieldCheck, ArrowRight, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageHero from "./PageHero";
 import LoanCalculator from "./LoanCalculator";
 import ProductHeroVisual from "./ProductHeroVisual";
 import { productImages } from "@/data/loanProducts";
+import { parseImageLine } from "@/lib/cms/content-images";
 
 export interface LoanProductData {
   slug: string;
@@ -19,19 +20,20 @@ export interface LoanProductData {
   conditions: string[];
   documents: string[];
   process: { title: string; desc: string }[];
+  image?: string | null;
 }
 
 const LoanProductPage = ({ data }: { data: LoanProductData }) => {
-  const image = productImages[data.slug as keyof typeof productImages];
+  const fallback = productImages[data.slug as keyof typeof productImages];
+  const heroSrc = data.image ?? fallback;
   return (
     <>
       <PageHero
         eyebrow="Cho vay cầm cố"
         title={data.name}
-        titleClassName="whitespace-nowrap"
         description={data.tagline}
         crumbs={[{ label: "Cho vay cầm cố" }, { label: data.name }]}
-        media={image ? <ProductHeroVisual src={image} alt={data.name} /> : undefined}
+        media={heroSrc ? <ProductHeroVisual src={heroSrc} alt={data.name} /> : undefined}
       />
 
       {/* Quick stats */}
@@ -62,7 +64,24 @@ const LoanProductPage = ({ data }: { data: LoanProductData }) => {
           <div className="lg:col-span-2 space-y-10">
             <div>
               <h2 className="text-3xl font-extrabold mb-4 text-foreground">Giới thiệu sản phẩm</h2>
-              <p className="text-muted-foreground leading-relaxed text-lg">{data.description}</p>
+              <div className="text-muted-foreground leading-relaxed text-lg space-y-4">
+                {data.description.split('\n').map((line, i) => {
+                  const img = parseImageLine(line);
+                  if (img) {
+                    return (
+                      <img
+                        key={i}
+                        src={img.url}
+                        alt={img.alt || data.name}
+                        loading="lazy"
+                        className="rounded-2xl w-full max-h-96 object-cover shadow-card"
+                      />
+                    );
+                  }
+                  if (!line.trim()) return null;
+                  return <p key={i}>{line}</p>;
+                })}
+              </div>
             </div>
 
             <div>
@@ -116,7 +135,7 @@ const LoanProductPage = ({ data }: { data: LoanProductData }) => {
                   <a href="tel:1900575792"><Phone className="h-4 w-4" /> Gọi 1900575792</a>
                 </Button>
                 <Button variant="outlineLight" size="lg" className="w-full" asChild>
-                  <Link to="/lien-he">Yêu cầu liên hệ <ArrowRight className="h-4 w-4 ml-1" /></Link>
+                  <Link href="/lien-he">Yêu cầu liên hệ <ArrowRight className="h-4 w-4 ml-1" /></Link>
                 </Button>
               </div>
             </div>
@@ -131,7 +150,7 @@ const LoanProductPage = ({ data }: { data: LoanProductData }) => {
                   .filter((x) => !x.to.endsWith(data.slug))
                   .map((p) => (
                     <li key={p.to}>
-                      <Link to={p.to} className="flex items-center justify-between text-muted-foreground hover:text-primary transition-smooth py-1.5">
+                      <Link href={p.to} className="flex items-center justify-between text-muted-foreground hover:text-primary transition-smooth py-1.5">
                         <span>{p.label}</span>
                         <ArrowRight className="h-4 w-4" />
                       </Link>
