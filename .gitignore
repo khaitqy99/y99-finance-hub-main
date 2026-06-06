@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Build outputs
+.next/
+out/
+dist/
+dist-ssr/
+.vercel/
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
+
+# Supabase local/temp
+supabase/.temp/
+supabase/.branches/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Test coverage
+coverage/
+
+# Cursor / agent temp
+.cursor/

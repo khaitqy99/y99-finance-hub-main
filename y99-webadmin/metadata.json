@@ -1,0 +1,6 @@
+{
+  "name": "y99-web-admin",
+  "description": "Web Admin for y99 Client",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
