@@ -166,7 +166,7 @@ export function MediaLibrary({ selectable, pickerMode, selectedUrl, onSelect }: 
       ) : items.length === 0 ? (
         <p className="text-center text-sm text-slate-500 py-8">Chưa có ảnh. Tải lên ảnh đầu tiên ở trên.</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-3">
           {displayedItems.map((item) => {
             const selected = selectable && selectedUrl === item.url;
             const handleCardClick = () => {
@@ -183,14 +183,19 @@ export function MediaLibrary({ selectable, pickerMode, selectedUrl, onSelect }: 
             return (
               <div
                 key={item.path}
-                className={`group relative rounded-lg border overflow-hidden bg-slate-100 aspect-square cursor-pointer hover:ring-2 hover:ring-slate-300 ${
+                className={`group relative mb-3 break-inside-avoid rounded-xl border overflow-hidden bg-slate-100 cursor-pointer shadow-sm hover:shadow-md transition-shadow hover:ring-2 hover:ring-slate-300 ${
                   selected ? 'ring-2 ring-slate-900 border-slate-900' : 'border-slate-200'
                 }`}
                 onClick={handleCardClick}
                 onDoubleClick={() => openFullView(item)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.url} alt={item.name} className="w-full h-full object-cover" />
+                <img
+                  src={item.url}
+                  alt={item.name}
+                  loading="lazy"
+                  className="block w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <p className="text-[10px] text-white truncate">{item.name}</p>
                   <div className="flex gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
