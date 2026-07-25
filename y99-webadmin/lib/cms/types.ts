@@ -66,6 +66,17 @@ export type HeroSlideRow = {
   sort_order: number;
 };
 
+export type CommunitySlideRow = {
+  id: string;
+  title: string;
+  alt_text: string;
+  image_url: string;
+  video_url: string;
+  link_to: string;
+  active: boolean;
+  sort_order: number;
+};
+
 export type TestimonialRow = {
   id: string;
   author: string;
@@ -115,6 +126,7 @@ export type AdminData = {
     slides: HeroSlideRow[];
     testimonials: TestimonialRow[];
   };
+  communitySlides: CommunitySlideRow[];
   leads: LeadRow[];
   settings: SiteSettingsRow;
 };

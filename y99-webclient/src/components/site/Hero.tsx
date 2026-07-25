@@ -182,7 +182,7 @@ const Hero = () => {
 
             <ul className="hero-text-outline space-y-2.5">
               {[
-                "Hạn mức lên đến 300.000.000 VNĐ",
+                "Hạn mức lên đến 20.000.000 VNĐ",
                 "Chỉ cần CCCD - VNeID mức 2",
                 "Hỗ trợ vay online bằng iCloud",
               ].map((t) => (

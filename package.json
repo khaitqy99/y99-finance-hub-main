@@ -3,8 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev:client": "npm run dev --prefix y99-webclient",
-    "dev:admin": "npm run dev --prefix y99-webadmin",
+    "dev": "node scripts/dev-all.mjs",
+    "dev:client": "npm run dev --prefix y99-webclient -- 3000",
+    "dev:admin": "npm run dev --prefix y99-webadmin -- 3001",
+    "dev:lms": "npm run dev --prefix y99-lms -- -p 3002",
+    "dev:all": "node scripts/dev-all.mjs",
     "build:client": "npm run build --prefix y99-webclient",
     "build:admin": "npm run build --prefix y99-webadmin",
     "build": "npm run build:client && npm run build:admin",

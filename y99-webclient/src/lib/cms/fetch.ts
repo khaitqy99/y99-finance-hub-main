@@ -1,5 +1,6 @@
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase/client';
 import type {
+  CommunitySlide,
   HeroSlide,
   LoanProductData,
   NewsArticle,
@@ -186,6 +187,28 @@ export async function fetchHeroSlides(): Promise<HeroSlide[] | null> {
   }));
 }
 
+export async function fetchCommunitySlides(): Promise<CommunitySlide[] | null> {
+  const supabase = getSupabase();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from('community_slides')
+    .select('*')
+    .eq('active', true)
+    .order('sort_order');
+
+  if (error || !data?.length) return null;
+
+  return data.map((row) => ({
+    id: String(row.id),
+    title: row.title ?? '',
+    alt: row.alt_text || row.title || 'Hoạt động cộng đồng',
+    image: row.image_url ?? '',
+    videoUrl: row.video_url || undefined,
+    linkTo: row.link_to || undefined,
+  }));
+}
+
 export async function fetchTestimonials(): Promise<TestimonialItem[] | null> {
   const supabase = getSupabase();
   if (!supabase) return null;
@@ -239,11 +262,21 @@ export async function submitLead(payload: {
   district?: string;
   loan_need?: string;
   asset?: string;
+  source_page?: string;
 }) {
-  if (!isSupabaseConfigured()) {
-    throw new Error('Supabase chưa cấu hình');
+  const response = await fetch('/api/leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const body = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(body.error || 'Gửi đăng ký thất bại');
   }
-  const supabase = getSupabase()!;
-  const { error } = await supabase.from('leads').insert(payload);
-  if (error) throw error;
+
+  if (body.lms_warning) {
+    console.warn('[submitLead] LMS sync:', body.lms_warning);
+  }
 }

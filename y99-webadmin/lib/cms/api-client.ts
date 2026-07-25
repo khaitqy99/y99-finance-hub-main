@@ -30,6 +30,12 @@ export const cmsApi = {
       ? jsonFetch('/api/hero-slides', { method: 'PUT', body: JSON.stringify({ id, ...payload }) })
       : jsonFetch('/api/hero-slides', { method: 'POST', body: JSON.stringify(payload) }),
   deleteSlide: (id: string) => jsonFetch(`/api/hero-slides?id=${id}`, { method: 'DELETE' }),
+  saveCommunitySlide: (payload: Record<string, unknown>, id?: string) =>
+    id
+      ? jsonFetch('/api/community-slides', { method: 'PUT', body: JSON.stringify({ id, ...payload }) })
+      : jsonFetch('/api/community-slides', { method: 'POST', body: JSON.stringify(payload) }),
+  deleteCommunitySlide: (id: string) =>
+    jsonFetch(`/api/community-slides?id=${id}`, { method: 'DELETE' }),
   saveTestimonial: (payload: Record<string, unknown>, id?: string) =>
     id
       ? jsonFetch('/api/testimonials', { method: 'PUT', body: JSON.stringify({ id, ...payload }) })

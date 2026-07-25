@@ -1,6 +1,7 @@
 import { Award, Heart, Users, Target, Sparkles, ShieldCheck } from "lucide-react";
 import PageHero from "@/components/site/PageHero";
 import ProductHeroVisual from "@/components/site/ProductHeroVisual";
+import CommunityActivities from "@/components/site/CommunityActivities";
 import imgAbout from "@/assets/page-about.webp";
 
 const values = [
@@ -8,14 +9,6 @@ const values = [
   { icon: ShieldCheck, title: "Chính trực", desc: "Minh bạch, rõ ràng và trung thực trong mọi thoả thuận." },
   { icon: Sparkles, title: "Đổi mới", desc: "Không ngừng cải tiến dịch vụ, ứng dụng công nghệ mới." },
   { icon: Target, title: "Lanh lợi", desc: "Xử lý nhanh chóng, hiệu quả mọi hồ sơ của khách hàng." },
-];
-
-const milestones = [
-  { year: "2018", text: "Y99 Finance được thành lập với 5 phòng giao dịch đầu tiên." },
-  { year: "2020", text: "Mở rộng lên 100 điểm giao dịch, ra mắt sản phẩm vay theo lương." },
-  { year: "2022", text: "Đạt mốc 500.000 khách hàng phục vụ, ra mắt nền tảng số." },
-  { year: "2024", text: "Hợp tác chiến lược với các công ty bảo hiểm lớn, ra mắt mảng bảo hiểm." },
-  { year: "2026", text: "Hướng tới mục tiêu 500 phòng giao dịch trên toàn quốc." },
 ];
 
 const About = () => {
@@ -82,22 +75,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="py-16">
-        <div className="container max-w-3xl">
-          <h2 className="text-4xl font-extrabold text-center text-foreground mb-12">Cột mốc phát triển</h2>
-          <div className="space-y-6">
-            {milestones.map((m) => (
-              <div key={m.year} className="flex gap-6 items-start">
-                <div className="shrink-0 w-20 text-2xl font-extrabold text-primary">{m.year}</div>
-                <div className="flex-1 rounded-2xl bg-card border border-border/60 p-5 shadow-soft">
-                  <p className="text-foreground">{m.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Community activities — replaces former milestones timeline */}
+      <CommunityActivities className="py-16" />
     </>
   );
 };

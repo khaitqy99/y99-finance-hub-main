@@ -46,3 +46,6 @@ coverage/
 
 # Cursor / agent temp
 .cursor/
+
+# Local-only apps (not part of this repo’s commits)
+y99-lms/

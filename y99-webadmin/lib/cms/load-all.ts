@@ -27,6 +27,7 @@ export async function loadAdminData(): Promise<AdminData> {
     storesRes,
     productsRes,
     slidesRes,
+    communityRes,
     testimonialsRes,
     settingsRes,
     leadsRes,
@@ -35,12 +36,13 @@ export async function loadAdminData(): Promise<AdminData> {
     supabase.from('store_locations').select('*').order('sort_order'),
     supabase.from('loan_products').select('*').order('sort_order'),
     supabase.from('hero_slides').select('*').order('sort_order'),
+    supabase.from('community_slides').select('*').order('sort_order'),
     supabase.from('testimonials').select('*').order('sort_order'),
     supabase.from('site_settings').select('*').eq('id', 1).maybeSingle(),
     supabase.from('leads').select('*').order('created_at', { ascending: false }),
   ]);
 
-  const errors = [
+  const hardErrors = [
     newsRes.error,
     storesRes.error,
     productsRes.error,
@@ -50,8 +52,8 @@ export async function loadAdminData(): Promise<AdminData> {
     leadsRes.error,
   ].filter(Boolean);
 
-  if (errors.length) {
-    throw new Error(errors.map((e) => e!.message).join('; '));
+  if (hardErrors.length) {
+    throw new Error(hardErrors.map((e) => e!.message).join('; '));
   }
 
   return {
@@ -71,6 +73,7 @@ export async function loadAdminData(): Promise<AdminData> {
       slides: slidesRes.data ?? [],
       testimonials: testimonialsRes.data ?? [],
     },
+    communitySlides: communityRes.error ? [] : (communityRes.data ?? []),
     leads: (leadsRes.data ?? []).map((l) => ({
       ...l,
       status: l.status as AdminData['leads'][0]['status'],

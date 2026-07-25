@@ -13,6 +13,7 @@ import {
   Settings,
   LogOut,
   Images,
+  HeartHandshake,
 } from 'lucide-react';
 import { createBrowserSupabaseClient, isAuthConfigured } from '@/lib/supabase/client';
 
@@ -23,6 +24,7 @@ const MENU_ITEMS = [
   { name: 'Hệ thống PGD', href: '/content/stores', icon: Store },
   { name: 'Sản phẩm vay', href: '/content/products', icon: WalletCards },
   { name: 'Marketing', href: '/content/marketing', icon: Megaphone },
+  { name: 'Hoạt động cộng đồng', href: '/content/community', icon: HeartHandshake },
   { name: 'Lượt đăng ký (Leads)', href: '/content/leads', icon: Users },
   { name: 'Người dùng', href: '/content/users', icon: UserCog },
   { name: 'Cài đặt Site', href: '/content/settings', icon: Settings },

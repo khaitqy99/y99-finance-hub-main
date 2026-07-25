@@ -1,4 +1,5 @@
 import {
+  fetchCommunitySlides,
   fetchHeroSlides,
   fetchLoanProducts,
   fetchNewsArticles,
@@ -11,13 +12,14 @@ import type { CmsInitialState } from "@/context/CmsContext";
 import { sanitizeForProps } from "@/lib/cms/serialize";
 
 export async function getCmsServerProps(): Promise<{ cmsInitial: CmsInitialState }> {
-  const [news, stores, products, recruitment, heroSlides, testimonials, settings] =
+  const [news, stores, products, recruitment, heroSlides, communitySlides, testimonials, settings] =
     await Promise.all([
       fetchNewsArticles(),
       fetchStoreLocations(),
       fetchLoanProducts(),
       fetchRecruitmentPosts(),
       fetchHeroSlides(),
+      fetchCommunitySlides(),
       fetchTestimonials(),
       fetchSiteSettings(),
     ]);
@@ -30,6 +32,7 @@ export async function getCmsServerProps(): Promise<{ cmsInitial: CmsInitialState
       products,
       recruitment,
       heroSlides,
+      communitySlides,
       testimonials,
       settings,
     }),

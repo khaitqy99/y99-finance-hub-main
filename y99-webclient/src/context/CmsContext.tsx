@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import {
+  fetchCommunitySlides,
   fetchHeroSlides,
   fetchLoanProducts,
   fetchNewsArticles,
@@ -9,6 +10,7 @@ import {
   fetchTestimonials,
 } from '@/lib/cms/fetch';
 import type {
+  CommunitySlide,
   HeroSlide,
   LoanProductData,
   NewsArticle,
@@ -28,6 +30,7 @@ type CmsState = {
   products: Record<string, LoanProductData>;
   recruitment: RecruitmentPost[];
   heroSlides: HeroSlide[] | null;
+  communitySlides: CommunitySlide[] | null;
   testimonials: TestimonialItem[] | null;
   settings: SiteSettings;
 };
@@ -55,6 +58,7 @@ function buildInitialState(initial?: CmsInitialState): CmsState {
     products: initial?.products ?? staticProducts,
     recruitment: initial?.recruitment ?? [],
     heroSlides: initial?.heroSlides ?? null,
+    communitySlides: initial?.communitySlides ?? null,
     testimonials: initial?.testimonials ?? null,
     settings: initial?.settings ?? defaultSettings,
   };
@@ -77,13 +81,14 @@ export function CmsProvider({
 
     let cancelled = false;
     (async () => {
-      const [news, stores, products, recruitment, heroSlides, testimonials, settings] =
+      const [news, stores, products, recruitment, heroSlides, communitySlides, testimonials, settings] =
         await Promise.all([
           fetchNewsArticles(),
           fetchStoreLocations(),
           fetchLoanProducts(),
           fetchRecruitmentPosts(),
           fetchHeroSlides(),
+          fetchCommunitySlides(),
           fetchTestimonials(),
           fetchSiteSettings(),
         ]);
@@ -95,6 +100,7 @@ export function CmsProvider({
           products,
           recruitment,
           heroSlides,
+          communitySlides,
           testimonials,
           settings,
         });

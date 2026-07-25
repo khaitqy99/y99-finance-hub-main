@@ -61,6 +61,15 @@ export type HeroSlide = {
   to: string;
 };
 
+export type CommunitySlide = {
+  id: string;
+  title: string;
+  alt: string;
+  image: string;
+  videoUrl?: string;
+  linkTo?: string;
+};
+
 export type TestimonialItem = {
   name: string;
   role: string;
