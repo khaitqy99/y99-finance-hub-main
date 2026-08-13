@@ -130,7 +130,8 @@ const VayTienOnlineSeo = () => {
       return;
     }
 
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     setSubmitting(true);
     try {
       await submitLead({
@@ -145,7 +146,7 @@ const VayTienOnlineSeo = () => {
         title: "Đăng ký thành công",
         description: "Chuyên viên tư vấn sẽ liên hệ bạn trong thời gian sớm nhất.",
       });
-      e.currentTarget.reset();
+      formEl.reset();
       setAgreed(false);
       setSelectedCity(cities[0]);
       setSelectedDistrict((districtsByCity[cities[0]] ?? [])[0] ?? "");

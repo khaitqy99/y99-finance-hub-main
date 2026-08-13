@@ -41,7 +41,8 @@ const DangKyVayNgay = () => {
       return;
     }
 
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     setSubmitting(true);
     try {
       await submitLead({
@@ -56,7 +57,7 @@ const DangKyVayNgay = () => {
         title: "Gửi đăng ký thành công",
         description: "Chuyên viên Y99 sẽ liên hệ tư vấn cho bạn sớm nhất.",
       });
-      e.currentTarget.reset();
+      formEl.reset();
       setAgreed(false);
     } catch {
       toast({
