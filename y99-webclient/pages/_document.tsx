@@ -1,4 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document";
+import { FB_PIXEL_ID } from "@/lib/analytics/fb-pixel";
 
 export default function Document() {
   return (
@@ -21,6 +22,16 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
+            alt=""
+          />
+        </noscript>
       </body>
     </Html>
   );

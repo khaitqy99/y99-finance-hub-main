@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { FacebookPixel } from "@/components/analytics/FacebookPixel";
 import "@/index.css";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -8,6 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+      <FacebookPixel />
       <Component {...pageProps} />
     </>
   );
