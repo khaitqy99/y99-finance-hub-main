@@ -45,4 +45,7 @@ export const cmsApi = {
     jsonFetch('/api/settings', { method: 'PUT', body: JSON.stringify(payload) }),
   updateLeadStatus: (id: string, status: string) =>
     jsonFetch('/api/leads', { method: 'PUT', body: JSON.stringify({ id, status }) }),
+  deleteLead: (id: string) => jsonFetch(`/api/leads?id=${id}`, { method: 'DELETE' }),
+  deleteLeads: (ids: string[]) =>
+    jsonFetch('/api/leads', { method: 'DELETE', body: JSON.stringify({ ids }) }),
 };

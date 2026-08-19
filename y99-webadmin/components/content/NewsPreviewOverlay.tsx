@@ -2,8 +2,13 @@
 
 import { useState } from 'react';
 import { Calendar, ExternalLink, LayoutGrid, X } from 'lucide-react';
-import { linesToArray } from '@/lib/cms/helpers';
 import { parseImageLine } from '@/lib/media/content-images';
+import {
+  contentToHtml,
+  htmlToContent,
+  isRichArticleContent,
+  sanitizeArticleHtml,
+} from '@/lib/cms/article-html';
 import { resolveArticleImageAlt } from '@/lib/seo/image-alt';
 import type { NewsRow } from '@/lib/cms/types';
 
@@ -100,6 +105,13 @@ function DetailPreview({ data }: { data: NewsPreviewData }) {
 
           {data.content.length === 0 ? (
             <p className="text-sm text-slate-400 italic">Chưa có nội dung bài viết.</p>
+          ) : isRichArticleContent(data.content) ? (
+            <div
+              className="news-article-body text-base text-slate-700 leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: sanitizeArticleHtml(contentToHtml(data.content)),
+              }}
+            />
           ) : (
             data.content.map((p, i) => {
               const img = parseImageLine(p);
@@ -187,7 +199,7 @@ export function formToPreviewData(
     date_display: form.date_display ?? '',
     image_url: form.image_url ?? '',
     image_alt: form.image_alt ?? '',
-    content: form.contentText != null ? linesToArray(form.contentText) : (form.content ?? []),
+    content: form.contentText != null ? htmlToContent(form.contentText) : (form.content ?? []),
     published: form.published,
   };
 }

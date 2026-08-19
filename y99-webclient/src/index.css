@@ -197,3 +197,34 @@
   background: hsl(210 12% 78%);
   border-radius: 999px;
 }
+
+.news-article-body h2 {
+  @apply text-2xl font-extrabold mt-8 mb-3;
+}
+.news-article-body h3 {
+  @apply text-xl font-bold mt-6 mb-2;
+}
+.news-article-body p {
+  @apply leading-relaxed mb-4;
+}
+.news-article-body ul {
+  @apply list-disc pl-6 mb-4 space-y-1;
+}
+.news-article-body ol {
+  @apply list-decimal pl-6 mb-4 space-y-1;
+}
+.news-article-body blockquote {
+  @apply border-l-4 border-primary/30 pl-4 italic text-muted-foreground mb-4;
+}
+.news-article-body a {
+  @apply text-primary underline font-medium;
+}
+.news-article-body img {
+  @apply rounded-2xl w-full my-6 shadow-card object-cover;
+}
+.news-article-body hr {
+  @apply my-8 border-border;
+}
+.news-article-body strong {
+  @apply font-bold text-foreground;
+}

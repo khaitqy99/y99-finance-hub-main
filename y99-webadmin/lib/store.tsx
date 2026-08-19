@@ -13,6 +13,8 @@ interface AdminContextProps {
   refresh: () => Promise<void>;
   updateSettings: (settings: Partial<SiteSettingsRow>) => Promise<void>;
   updateLeadStatus: (id: string, status: LeadStatus) => Promise<void>;
+  deleteLead: (id: string) => Promise<void>;
+  deleteLeads: (ids: string[]) => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextProps | null>(null);
@@ -49,8 +51,20 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     await refresh();
   };
 
+  const deleteLead = async (id: string) => {
+    await cmsApi.deleteLead(id);
+    await refresh();
+  };
+
+  const deleteLeads = async (ids: string[]) => {
+    await cmsApi.deleteLeads(ids);
+    await refresh();
+  };
+
   return (
-    <AdminContext.Provider value={{ data, loading, error, refresh, updateSettings, updateLeadStatus }}>
+    <AdminContext.Provider
+      value={{ data, loading, error, refresh, updateSettings, updateLeadStatus, deleteLead, deleteLeads }}
+    >
       {children}
     </AdminContext.Provider>
   );

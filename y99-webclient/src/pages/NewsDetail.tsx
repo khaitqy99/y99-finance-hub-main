@@ -4,6 +4,11 @@ import PageHero from "@/components/site/PageHero";
 import { useCms } from "@/context/CmsContext";
 import { parseImageLine } from "@/lib/cms/content-images";
 import { resolveArticleImageAlt } from "@/lib/seo/image-alt";
+import {
+  contentToHtml,
+  isRichArticleContent,
+  sanitizeArticleHtml,
+} from "@/lib/cms/article-html";
 
 type Props = {
   /** From getServerSideProps — router.query.slug is empty on first client paint */
@@ -45,26 +50,35 @@ const NewsDetail = ({ slug }: Props) => {
 
           <div className="prose prose-lg max-w-none mt-8 space-y-5 text-foreground/85">
             <p className="text-xl leading-relaxed font-medium text-foreground">{article.excerpt}</p>
-            {article.content.map((p, i) => {
-              const img = parseImageLine(p);
-              if (img) {
-                const idx = imageIndex++;
+            {isRichArticleContent(article.content) ? (
+              <div
+                className="news-article-body"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeArticleHtml(contentToHtml(article.content)),
+                }}
+              />
+            ) : (
+              article.content.map((p, i) => {
+                const img = parseImageLine(p);
+                if (img) {
+                  const idx = imageIndex++;
+                  return (
+                    <img
+                      key={i}
+                      src={img.url}
+                      alt={resolveArticleImageAlt(idx, img.alt, altCtx)}
+                      loading={idx < 3 ? "eager" : "lazy"}
+                      className="rounded-2xl w-full my-6 shadow-card object-cover"
+                    />
+                  );
+                }
                 return (
-                  <img
-                    key={i}
-                    src={img.url}
-                    alt={resolveArticleImageAlt(idx, img.alt, altCtx)}
-                    loading={idx < 3 ? "eager" : "lazy"}
-                    className="rounded-2xl w-full my-6 shadow-card object-cover"
-                  />
+                  <p key={i} className="leading-relaxed">
+                    {p}
+                  </p>
                 );
-              }
-              return (
-                <p key={i} className="leading-relaxed">
-                  {p}
-                </p>
-              );
-            })}
+              })
+            )}
           </div>
 
           <Link href="/ban-tin" className="inline-flex items-center gap-2 mt-10 text-primary font-semibold hover:gap-3 transition-smooth">

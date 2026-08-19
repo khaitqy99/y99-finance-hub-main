@@ -1,4 +1,4 @@
-import { parseImageLine } from '@/lib/media/content-images';
+import { extractContentImages } from '@/lib/cms/article-html';
 
 export const SEO_PRIORITY_IMAGE_COUNT = 3;
 
@@ -76,9 +76,7 @@ export function listArticleImageSlots(params: {
     index += 1;
   }
 
-  for (const line of params.content) {
-    const img = parseImageLine(line);
-    if (!img) continue;
+  for (const img of extractContentImages(params.content)) {
     slots.push({
       index,
       alt: img.alt,

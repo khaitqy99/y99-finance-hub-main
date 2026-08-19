@@ -110,7 +110,7 @@ export function SeoFields({
         </div>
         <input
           maxLength={META_TITLE_MAX + 20}
-          placeholder="Từ khóa chính đặt sát bên trái (≤ 60 ký tự)"
+          placeholder="Hiện trên Google, ví dụ: Vay nhanh Cần Thơ | Y99"
           value={metaTitle}
           onChange={(e) => onMetaTitleChange(e.target.value)}
           className={inputClass}
@@ -136,7 +136,7 @@ export function SeoFields({
         <textarea
           rows={3}
           maxLength={META_DESC_MAX + 40}
-          placeholder="Mô tả chứa từ khóa, khuyến nghị 120–160 ký tự"
+          placeholder="1–2 câu có từ khóa, khoảng 120–160 ký tự, để người dùng muốn bấm vào"
           value={metaDescription}
           onChange={(e) => onMetaDescriptionChange(e.target.value)}
           className={textareaClass}
@@ -156,7 +156,7 @@ export function SeoFields({
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-slate-900">Tiêu đề H1 (trên trang)</label>
           <input
-            placeholder="1 H1/trang, chứa từ khóa chính — có thể dài hơn meta title"
+            placeholder="Tiêu đề lớn trên trang, ví dụ: Vay tiền nhanh tại Cần Thơ cùng Y99"
             value={seoH1}
             onChange={(e) => onSeoH1Change(e.target.value)}
             className={inputClass}
