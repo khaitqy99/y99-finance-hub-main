@@ -15,7 +15,7 @@ import {
   formToPreviewData,
 } from '@/components/content/NewsPreviewOverlay';
 import { contentToHtml, htmlToContent } from '@/lib/cms/article-html';
-import { slugify } from '@/lib/cms/helpers';
+import { normalizeNewsSlug, slugify } from '@/lib/cms/helpers';
 import type { NewsRow } from '@/lib/cms/types';
 
 type FormState = Partial<NewsRow> & { contentText?: string };
@@ -83,7 +83,7 @@ export function NewsArticleEditor({ articleId }: { articleId?: string }) {
     setSaving(true);
     try {
       const payload = {
-        slug: editing.slug || slugify(editing.title ?? ''),
+        slug: normalizeNewsSlug(editing.slug || slugify(editing.title ?? '')),
         title: editing.title,
         meta_title: editing.meta_title ?? '',
         meta_description: editing.meta_description ?? '',
@@ -266,11 +266,15 @@ export function NewsArticleEditor({ articleId }: { articleId?: string }) {
               <label className="text-sm font-medium text-slate-900">Slug (URL)</label>
               <input
                 required
-                placeholder="y99-dong-hanh-khach-hang-can-tho"
+                placeholder="gioi-thieu-y99-cam-do-online"
                 value={editing.slug ?? ''}
-                onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
+                onChange={(e) => setEditing({ ...editing, slug: normalizeNewsSlug(e.target.value) })}
                 className={inputClass}
               />
+              <p className="text-xs text-slate-500">
+                Chỉ nhập phần đuôi URL, không dán cả link. Ví dụ đúng:{' '}
+                <span className="font-medium text-slate-700">gioi-thieu-y99-cam-do-online</span>
+              </p>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-900">Danh mục</label>

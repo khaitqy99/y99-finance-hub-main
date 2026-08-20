@@ -8,12 +8,15 @@ import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
+import { TableKit, TableCell, TableHeader } from '@tiptap/extension-table';
 import {
   AlignCenter,
   AlignLeft,
   AlignRight,
   Bold,
   CodeXml,
+  Columns3,
+  Combine,
   Heading2,
   Heading3,
   ImageIcon,
@@ -23,9 +26,15 @@ import {
   List,
   ListOrdered,
   Minus,
+  MoveHorizontal,
+  MoveVertical,
   Quote,
   Redo2,
+  Rows3,
+  SplitSquareVertical,
   Strikethrough,
+  Table,
+  Trash2,
   Underline as UnderlineIcon,
   Undo2,
 } from 'lucide-react';
@@ -36,6 +45,73 @@ import { SEO_PRIORITY_IMAGE_COUNT } from '@/lib/seo/image-alt';
 
 const CONTENT_PLACEHOLDER =
   'Gõ nội dung tại đây. Dùng thanh công cụ phía trên để in đậm, thêm tiêu đề, danh sách hoặc chèn ảnh.';
+
+const cellHeightAttribute = {
+  height: {
+    default: null as string | null,
+    parseHTML: (element: HTMLElement) =>
+      element.getAttribute('data-height') || element.style.height || null,
+    renderHTML: (attributes: { height?: string | null }) => {
+      if (!attributes.height) return {};
+      const h = String(attributes.height);
+      return { 'data-height': h, style: `height: ${h}; min-height: ${h}` };
+    },
+  },
+};
+
+const NewsTableCell = TableCell.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...cellHeightAttribute };
+  },
+});
+
+const NewsTableHeader = TableHeader.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...cellHeightAttribute };
+  },
+});
+
+function insertTableLikeWord(editor: Editor) {
+  const spec = window.prompt('Kích thước bảng (hàng x cột), ví dụ 3x4:', '3x3');
+  if (spec === null) return;
+  const match = spec.trim().match(/^(\d+)\s*[x×,]\s*(\d+)$/i);
+  const rows = match ? Number(match[1]) : 3;
+  const cols = match ? Number(match[2]) : 3;
+  editor
+    .chain()
+    .focus()
+    .insertTable({
+      rows: Math.min(20, Math.max(1, rows)),
+      cols: Math.min(12, Math.max(1, cols)),
+      withHeaderRow: true,
+    })
+    .run();
+}
+
+function setColumnWidth(editor: Editor) {
+  const current =
+    (editor.getAttributes('tableCell').colwidth as number[] | null)?.[0] ??
+    (editor.getAttributes('tableHeader').colwidth as number[] | null)?.[0];
+  const input = window.prompt('Độ rộng cột (px), ví dụ 160:', String(current ?? 140));
+  if (input === null) return;
+  const px = parseInt(input, 10);
+  if (!Number.isFinite(px) || px < 40) return;
+  editor.chain().focus().setCellAttribute('colwidth', [px]).run();
+}
+
+function setRowHeight(editor: Editor) {
+  const current =
+    (editor.getAttributes('tableCell').height as string | null) ??
+    (editor.getAttributes('tableHeader').height as string | null);
+  const input = window.prompt(
+    'Chiều cao hàng (px), ví dụ 48:',
+    String(current ?? '48').replace(/px$/i, ''),
+  );
+  if (input === null) return;
+  const px = parseInt(input, 10);
+  if (!Number.isFinite(px) || px < 24) return;
+  editor.chain().focus().setCellAttribute('height', `${px}px`).run();
+}
 
 type Props = {
   label: string;
@@ -239,6 +315,77 @@ function Toolbar({
       <ToolButton title="Chèn ảnh từ thư viện" onClick={onInsertImage}>
         <ImageIcon size={15} />
       </ToolButton>
+      <Divider />
+      <ToolButton
+        title="Chèn bảng — nhập số hàng x cột"
+        active={editor.isActive('table')}
+        onClick={() => insertTableLikeWord(editor)}
+      >
+        <Table size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Thêm hàng"
+        disabled={!editor.can().addRowAfter()}
+        onClick={() => editor.chain().focus().addRowAfter().run()}
+      >
+        <Rows3 size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Thêm cột"
+        disabled={!editor.can().addColumnAfter()}
+        onClick={() => editor.chain().focus().addColumnAfter().run()}
+      >
+        <Columns3 size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Xóa hàng"
+        disabled={!editor.can().deleteRow()}
+        onClick={() => editor.chain().focus().deleteRow().run()}
+      >
+        <Minus size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Xóa cột"
+        disabled={!editor.can().deleteColumn()}
+        onClick={() => editor.chain().focus().deleteColumn().run()}
+      >
+        <Minus size={15} className="rotate-90" />
+      </ToolButton>
+      <ToolButton
+        title="Gộp ô đã chọn"
+        disabled={!editor.can().mergeCells()}
+        onClick={() => editor.chain().focus().mergeCells().run()}
+      >
+        <Combine size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Tách ô"
+        disabled={!editor.can().splitCell()}
+        onClick={() => editor.chain().focus().splitCell().run()}
+      >
+        <SplitSquareVertical size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Độ rộng cột (px) — hoặc kéo viền cột trong bảng"
+        disabled={!editor.isActive('table')}
+        onClick={() => setColumnWidth(editor)}
+      >
+        <MoveHorizontal size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Chiều cao hàng (px)"
+        disabled={!editor.isActive('table')}
+        onClick={() => setRowHeight(editor)}
+      >
+        <MoveVertical size={15} />
+      </ToolButton>
+      <ToolButton
+        title="Xóa bảng"
+        disabled={!editor.can().deleteTable()}
+        onClick={() => editor.chain().focus().deleteTable().run()}
+      >
+        <Trash2 size={15} />
+      </ToolButton>
       <div className="ml-auto">
         <ToolButton
           title={sourceMode ? 'Chế độ soạn thảo' : 'Xem HTML'}
@@ -281,6 +428,18 @@ export function NewsContentEditor({
       Image.configure({
         HTMLAttributes: { class: 'rounded-xl' },
       }),
+      TableKit.configure({
+        table: {
+          resizable: true,
+          lastColumnResizable: true,
+          handleWidth: 8,
+          cellMinWidth: 64,
+        },
+        tableCell: false,
+        tableHeader: false,
+      }),
+      NewsTableCell,
+      NewsTableHeader,
       Placeholder.configure({
         placeholder: CONTENT_PLACEHOLDER,
       }),
@@ -378,7 +537,7 @@ export function NewsContentEditor({
       </div>
       <p className="text-xs text-slate-500">
         Viết như soạn thảo thông thường: bôi đen để định dạng, thêm tiêu đề H2/H3, danh sách, căn lề, liên kết.
-        Chèn ảnh từ thư viện trên thanh công cụ — 3 ảnh đầu bài nên có alt mô tả rõ. Nút mã nguồn để xem HTML.
+        Trong bảng: kéo viền cột để đổi độ rộng (như Word). Nút mũi tên ngang/dọc để nhập rộng cột hoặc cao hàng (px). Kéo chọn nhiều ô rồi gộp/tách. Nút bảng để chọn số hàng × cột.
       </p>
       <MediaPickerModal
         open={pickerOpen}

@@ -27,6 +27,11 @@ const defaultSettings: SiteSettings = {
     'Y99 hỗ trợ cầm đồ uy tín, cung cấp dịch vụ cầm đồ online minh bạch, an toàn, tiện lợi - linh hoạt, không giới hạn khoảng cách.',
 };
 
+function publicNewsSlug(slug: string): string {
+  const parts = slug.split(/[/?#]/).filter((part) => part && !/^https?:$/i.test(part));
+  return parts.pop() ?? slug.trim();
+}
+
 export async function fetchNewsArticles(): Promise<NewsArticle[]> {
   const supabase = getSupabase();
   if (!supabase) return fallbackNews;
@@ -44,7 +49,7 @@ export async function fetchNewsArticles(): Promise<NewsArticle[]> {
   if (!data?.length) return [];
 
   return data.map((row) => ({
-    slug: row.slug,
+    slug: publicNewsSlug(row.slug),
     title: row.title,
     metaTitle: row.meta_title || undefined,
     metaDescription: row.meta_description || undefined,

@@ -228,3 +228,13 @@
 .news-article-body strong {
   @apply font-bold text-foreground;
 }
+.news-article-body table {
+  @apply w-full border-collapse my-6 text-sm;
+}
+.news-article-body th,
+.news-article-body td {
+  @apply border border-border px-3 py-2 align-top;
+}
+.news-article-body th {
+  @apply bg-muted font-bold text-left;
+}
